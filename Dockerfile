@@ -8,5 +8,6 @@ COPY . /app
 
 WORKDIR /app
 
-## TODO: Run gunicorn
 RUN pip install -r requirements.txt
+
+ENTRYPOINT [ "bin/start.sh"]
