@@ -1,0 +1,6 @@
+## virtualenv path for the service
+DENV/
+working_dir/
+__pycache__/
+.DS_Store
+.vscode/

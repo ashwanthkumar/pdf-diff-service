@@ -1,0 +1,7 @@
+DENV/
+.git/
+.vscode/
+__pycache__/
+.gocd/
+working_dir/
+.DS_Store
