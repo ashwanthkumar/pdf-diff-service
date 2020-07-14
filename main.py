@@ -85,7 +85,7 @@ def get_diff_by_id(response: Response,
         import json
         with open(json_path, 'r') as json_file:
             changes = json.load(json_path)
-        render_changes(changes, png_path)
+        render_changes(changes, png_path, optimize=True)
 
     if img:
         return FileResponse(png_path, media_type="image/png")
@@ -104,7 +104,7 @@ def copy_file(upload_directory: str, source: UploadFile, filename: str):
     return final_file
 
 
-def render_changes(changes, png_path):
+def render_changes(changes, png_path, optimize=False):
     img = command_line.render_changes(changes, "strike,box".split(','), 900)
-    img.save(png_path, "png")
+    img.save(png_path, "png", optimize=optimize)
     img.seek(0)
