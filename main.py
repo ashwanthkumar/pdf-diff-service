@@ -110,12 +110,23 @@ def copy_file(upload_directory: str, source: UploadFile, filename: str):
 
 
 def render_changes(changes, pdf_path):
-    img = command_line.render_changes(changes, "strike,box".split(','), 900)
-    rgb_img = img.convert('RGB')
-    rgb_img.save(pdf_path,
-                 "pdf",
-                 save_all=True,
-                 title='Textual Differences',
-                 producer='PDF-Diff/v0.1')
-    del img
-    del rgb_img
+    if len(changes) == 0:
+        # Create a mock PDF and write that
+        from fpdf import FPDF
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font('Arial', 'B', 16)
+        pdf.cell(40, 10,
+                 'There are no textual differences between the documents.')
+        pdf.output(pdf_path, 'F')
+    else:
+        img = command_line.render_changes(changes, "strike,box".split(','),
+                                          900)
+        rgb_img = img.convert('RGB')
+        rgb_img.save(pdf_path,
+                     "pdf",
+                     save_all=True,
+                     title='Textual Differences',
+                     producer='PDF-Diff/v0.1')
+        del img
+        del rgb_img
