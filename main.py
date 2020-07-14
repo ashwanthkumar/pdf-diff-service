@@ -51,11 +51,15 @@ def pdf_diff(response: Response,
     if img:
         png_path = working_dir + "/" + DIFF_PNG
         render_changes(changes, png_path)
-        custom_headers = {DIFF_ID_HEADER: diff_id}
+        custom_headers = {
+            DIFF_ID_HEADER: diff_id,
+            'access-control-expose-headers': DIFF_ID_HEADER
+        }
         return FileResponse(png_path,
                             media_type="image/png",
                             headers=custom_headers)
     else:
+        response.headers['access-control-expose-headers'] = DIFF_ID_HEADER
         response.headers[DIFF_ID_HEADER] = diff_id
         return changes
 
