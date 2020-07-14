@@ -4,7 +4,7 @@ import uuid
 import io
 from typing import Optional
 
-from fastapi import FastAPI, File, UploadFile, Response, Path, HTTPException
+from fastapi import FastAPI, File, UploadFile, Response, Path, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import StreamingResponse, FileResponse
 from starlette.requests import Request
@@ -32,6 +32,7 @@ def health():
 
 @app.post("/diff")
 def pdf_diff(response: Response,
+             background_tasks: BackgroundTasks,
              prev: UploadFile = File(...),
              current: UploadFile = File(...),
              img: Optional[bool] = True):
@@ -48,8 +49,8 @@ def pdf_diff(response: Response,
     with open(json_path, 'w') as fp:
         json.dump(changes, fp)
 
+    pdf_path = working_dir + "/" + DIFF_PDF
     if img:
-        pdf_path = working_dir + "/" + DIFF_PDF
         render_changes(changes, pdf_path)
         custom_headers = {
             DIFF_ID_HEADER: diff_id,
@@ -62,6 +63,7 @@ def pdf_diff(response: Response,
     else:
         response.headers['access-control-expose-headers'] = DIFF_ID_HEADER
         response.headers[DIFF_ID_HEADER] = diff_id
+        background_tasks.add_task(render_changes, changes, pdf_path)
         return changes
 
 
@@ -86,7 +88,7 @@ def get_diff_by_id(response: Response,
         import json
         with open(json_path, 'r') as json_file:
             changes = json.load(json_file)
-        render_changes(changes, pdf_path, optimize=True)
+        render_changes(changes, pdf_path)
 
     if img:
         return FileResponse(pdf_path,
@@ -107,7 +109,7 @@ def copy_file(upload_directory: str, source: UploadFile, filename: str):
     return final_file
 
 
-def render_changes(changes, pdf_path, optimize=False):
+def render_changes(changes, pdf_path):
     img = command_line.render_changes(changes, "strike,box".split(','), 900)
     rgb_img = img.convert('RGB')
     rgb_img.save(pdf_path,
