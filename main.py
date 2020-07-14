@@ -84,7 +84,7 @@ def get_diff_by_id(response: Response,
     if json_exists and not png_exists:
         import json
         with open(json_path, 'r') as json_file:
-            changes = json.load(json_path)
+            changes = json.load(json_file)
         render_changes(changes, png_path, optimize=True)
 
     if img:
