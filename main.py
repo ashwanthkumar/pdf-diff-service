@@ -39,8 +39,8 @@ def pdf_diff(response: Response,
     working_dir = BASE_WORKING_DIR + "/" + diff_id + "/"
     # Create a new directory structure for each request to store the uploaded files and diff.png
     os.makedirs(working_dir)
-    prev_path = copy_file(working_dir, prev)
-    current_path = copy_file(working_dir, current)
+    prev_path = copy_file(working_dir, prev, 'prev.pdf')
+    current_path = copy_file(working_dir, current, 'current.pdf')
     changes = command_line.compute_changes(prev_path, current_path)
 
     json_path = working_dir + "/" + DIFF_JSON
@@ -92,8 +92,8 @@ def get_diff_by_id(response: Response,
         return changes
 
 
-def copy_file(upload_directory: str, source: UploadFile):
-    final_file = os.path.join(upload_directory, source.filename)
+def copy_file(upload_directory: str, source: UploadFile, filename: str):
+    final_file = os.path.join(upload_directory, filename)
     file_to_copy_to = open(final_file, 'wb+')
     shutil.copyfileobj(source.file, file_to_copy_to)
     file_to_copy_to.close()
