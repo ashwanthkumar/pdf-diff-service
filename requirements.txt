@@ -11,7 +11,7 @@ Pillow==8.3.2
 pydantic==1.6.2
 python-multipart==0.0.5
 six==1.15.0
-starlette==0.13.4
+starlette==0.25.0
 uvicorn==0.11.7
 uvloop==0.14.0
 websockets==9.1
